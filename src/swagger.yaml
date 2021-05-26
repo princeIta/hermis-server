@@ -1,0 +1,282 @@
+openapi: 3.0.0
+info:
+  title: Hermis API
+  description: Hermis is a customer management and message scheduling system
+  version: 0.0.1
+servers:
+  - url: http://localhost:4700/api/v1
+    description: Local server for testing on local machine
+  - url: http://hermis-staging.herokuapp.com/api/v1
+    description: Internal staging server for testing
+paths:
+  /login:
+    post:
+      summary: user login (password = M77$fc)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passcode:
+                  type: string
+      responses:
+        "200": # status code
+          description: session token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  issued:
+                    type: string
+                    format: date-time
+                  expires:
+                    type: string
+                    format: date-time
+        "400":
+          description: Failed login. invalid passcode
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/AuthenticationError"
+        "500":
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/InternalServerError"
+  /clients:
+    get:
+      summary: Returns a list of clients.
+      responses:
+        "200": # status code
+          description: A JSON array of client object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Client"
+  /client:
+    post:
+      summary: Create new client.
+      responses:
+        "200":
+          description: object of created client
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Client"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                contacts:
+                  type: array
+                  items:
+                    $ref: "#/components/schema/Contact"
+                serviceInfo:
+                  type: object
+                  $ref: "#/components/schema/ServiceInfo"
+  /client/:clientId/active:
+    put:
+      summary: activate existing client by id.
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: client object
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Client"
+  /client/:clientId/inactive:
+    put:
+      summary: de-activate existing client by id.
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: client object
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Client"
+  /s-messages/:clientId:
+    get:
+      summary: get all messages that have been scheduled for a client
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: array of scheduled message object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScheduledMessage"
+  /s-message/:clientId:
+    post:
+      summary: Schedule a message to be sent to a client
+      parameters:
+      - name: clientId
+        in: path
+        type: string
+        required: true
+      responses:
+        "200":
+          description: Scheduled message object
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ScheduledMessage"
+  /i-message/:clientId:
+    post:
+      summary: Send instant message to a client
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: message success object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    name: success
+components:
+  schemas:
+    Client:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contact"
+        serviceInfo:
+          type: object
+          $ref: "#/components/schemas/ServiceInfo"
+        isDeleted:
+          type: boolean
+        deletedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - contacts
+        - serviceInfo
+    Contact:
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+      required:
+        - name
+    ServiceInfo:
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+    ScheduledMessage:
+      properties:
+        id:
+          type: string
+        client:
+          $ref: "#/components/schemas/Client"
+        message:
+          type: object
+          properties:
+            content:
+              type: string
+            subject:
+              type: string
+            messageType:
+              type: string
+              description: accepted values:- email | sms
+        sender:
+          type: object
+          properties:
+            name: 
+              type: string
+            email: 
+              type: string
+        recipients:
+          type: array
+          items:
+            type: object
+            properties:
+              name: 
+                type: string
+              phone: 
+                type: string
+              email: 
+                type: string
+            required: -name
+        isDeleted:
+          type: boolean
+        deletedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    AuthenticationError:
+      properties:
+        message:
+          type: string
+        name:
+          type: string
+        statusCode:
+          type: integer
+    InternalServerError:
+       properties:
+        message:
+          type: string
+        name:
+          type: string
+        statusCode:
+          type: integer
+        stack:
+          type: string

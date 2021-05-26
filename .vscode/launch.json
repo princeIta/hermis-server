@@ -1,0 +1,35 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Port",
+			"port": 9229
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch Program-dev",
+			"skipFiles": ["<node_internals>/**"],
+			"program": "${workspaceFolder}/src/index.ts",
+			"env": { "NODE_ENV": "development", "PORT": "4700" },
+			"args": ["--trace-warnings"]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "nodemon-dev",
+			"runtimeExecutable": "nodemon",
+			"program": "${workspaceFolder}/src/index.ts",
+			"restart": true,
+			"env": { "NODE_ENV": "development" },
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"skipFiles": ["<node_internals>/**"]
+		}
+	]
+}
