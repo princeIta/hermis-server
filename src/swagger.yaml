@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:4700/api/v1
     description: Local server for testing on local machine
-  - url: http://hermis-staging.herokuapp.com/api/v1
+  - url: https://hermis-server.herokuapp.com/api/v1
     description: Internal staging server for testing
 paths:
   /login:
