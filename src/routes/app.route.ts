@@ -20,7 +20,7 @@ router.use(httpAuthMiddleware);
 
 // Clients
 router.post('/client', shield(), clientController.createClient);
-router.get('/clients', shield(), clientController.getAllClients);
+router.get('/client/list', shield(), clientController.getAllClients);
 router.put(
   '/client/:clientId/active',
   shield(),

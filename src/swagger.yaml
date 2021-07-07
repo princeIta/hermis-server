@@ -51,7 +51,7 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/InternalServerError"
-  /clients:
+  /client/list:
     get:
       summary: Returns a list of clients.
       responses:
