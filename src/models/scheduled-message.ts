@@ -111,14 +111,14 @@ export class ScheduledMessage {
     return this._deletedAt;
   }
   set deletedAt(value) {
-    this.deletedAt = value;
+    this._deletedAt = value;
   }
 
   get createdAt() {
     return this._createdAt;
   }
   set createdAt(value) {
-    this.createdAt = value;
+    this._createdAt = value;
   }
 
   constructor(
