@@ -1,9 +1,17 @@
 import stringHash from 'string-hash';
+import { generateRandomChars, generateRandomNumber } from '../../lib/random';
 
 class Accounts {
-  private __hashedPasscodes: Array<string | number> = [1529302569];
+  private __hashedPasscodes: Array<string | number> = [];
 
-  private _findPasscodeInHashPool(passcode: string | number) {
+  constructor() {
+    const passcodePool = generateListOfRandomCharacters(5)
+    const hashedPasscode = hashCharList(passcodePool)
+    this.__hashedPasscodes = hashedPasscode
+    console.log(passcodePool)
+  }
+
+  private _findPasscodeInHashedPasscodes(passcode: string | number) {
     return this.__hashedPasscodes.find(
       (eachPasscode) => eachPasscode === passcode
     );
@@ -12,7 +20,7 @@ class Accounts {
   validatePasscode(passcode: string): boolean {
     const hashedPasscode = stringHash(passcode);
 
-    const foundHashedPasscode = this._findPasscodeInHashPool(hashedPasscode);
+    const foundHashedPasscode = this._findPasscodeInHashedPasscodes(hashedPasscode);
 
     if (foundHashedPasscode) {
       return true;
@@ -23,3 +31,22 @@ class Accounts {
 }
 
 export default new Accounts();
+
+function generateListOfRandomCharacters(poolSize: number) {
+  const listOfChars = []
+  for (let n = 1; n <= poolSize; n++) {
+    const passcodeLength = generateRandomNumber(4, 6);
+    const passcode = generateRandomChars(passcodeLength)
+    listOfChars.push(passcode)
+  }
+  return listOfChars
+}
+
+
+function hashCharList(listOfChars: Array<string>) {
+  const hashedChars = []
+  for (let char of listOfChars) {
+    hashedChars.push(stringHash(char))
+  }
+  return hashedChars
+}
